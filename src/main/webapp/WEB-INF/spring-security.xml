@@ -1,0 +1,48 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <http pattern="/css/**" security="none"/>
+    <http pattern="/img/**" security="none"/>
+    <http pattern="/js/**" security="none"/>
+
+    <http auto-config="true" use-expressions="true">
+            <intercept-url pattern="/manager**" access="hasRole('MANAGER')" />
+            <intercept-url pattern="/developer**" access="hasRole('DEVELOPER')" />
+        <!-- access denied page -->
+        <access-denied-handler error-page="/403" />
+
+        <!--default-target-url="/projects"-->
+        <form-login
+                login-page="/login"
+                authentication-failure-url="/login?error"
+                authentication-success-handler-ref="myAuthenticationSuccessHandler"
+                username-parameter="username"
+                password-parameter="password" />
+        <logout logout-success-url="/login" logout-url="/j_spring_security_logout" />
+        <!--<logout logout-success-url="/login?logout"  />-->
+        <!--<remember-me user-service-ref="UserService" key="task_key" />-->
+        <!-- enable csrf protection -->
+        <csrf/>
+    </http>
+
+    <beans:bean id="myAuthenticationSuccessHandler" class="com.unisport.mvc.web.security.MyAuthenticationSuccessHandler"/>
+
+    <!-- Select users and user_roles from database -->
+    <!--<authentication-manager>-->
+        <!--<authentication-provider ref="userServiceImpl">-->
+            <!--&lt;!&ndash;&lt;!&ndash;<password-encoder ref="bcrypt" />&ndash;&gt;&ndash;&gt;-->
+
+            <!--&lt;!&ndash;&lt;!&ndash;<jdbc-user-service data-source-ref="dataSource"&ndash;&gt;&ndash;&gt;-->
+                               <!--&lt;!&ndash;&lt;!&ndash;users-by-username-query = "select user_name, password, enabled from user where user_name=?"&ndash;&gt;&ndash;&gt;-->
+                               <!--&lt;!&ndash;&lt;!&ndash;authorities-by-username-query = "select u.user_name, r.namerole from user u, USERS_ROLES ur, ROLE r&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;WHERE u.USER_ID=ur.USER_ID and ur.USER_ROLE_ID=r.USER_ROLE_ID and u.USER_NAME=?" />&ndash;&gt;&ndash;&gt;-->
+        <!--</authentication-provider>-->
+    <!--</authentication-manager>-->
+</beans:beans>
+
+<!-- authorities-by-username-query = "select u.user_name, u.role from user u where u.user_name =?" /> -->
